@@ -10,7 +10,7 @@ require('dotenv').config()
 // Resale
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.USER_Name}:${process.env.USER_PASS}@cluster0.xuxoczf.mongodb.net/?retryWrites=true&w=majority`;
 console.log(uri)
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -24,6 +24,12 @@ async function run() {
       const result = await catagoryCollction.find(qurey).toArray()
       res.send(result)
 
+    })
+    app.get('/catagory/:id',async(req,res)=>{
+      const id =req.params.id;
+      const qurey={_id :ObjectId(id)}
+      const result =await catagoryCollction.findOne(qurey)
+      res.send(result)
     })
 
 
