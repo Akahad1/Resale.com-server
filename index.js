@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express()
+const jwt = require('jsonwebtoken');
 
 app.use(cors())
 app.use(express.json())
@@ -21,6 +22,21 @@ const ProductsCollction = client.db('Resale').collection('Products')
 const bookingCollction = client.db('Resale').collection('booking')
 const usersCollction = client.db('Resale').collection('users')
 
+function veryfyJwt (req,res,next){
+  const authHeader=req.headers.authorization
+  if(!authHeader){
+      return res.status(401).send('unauthzied acces')
+  }
+  const token =authHeader.split(' ')[1]
+  jwt.verify(token,process.env.ACCESS_TOKEN,function(err,decoded){
+      if(err){
+          return res.status.send({maeasss: 'forbeden access'} )
+      }
+      req.decoded=decoded
+      next()
+  })
+
+}
 
 async function run() {
   try {
@@ -30,13 +46,19 @@ async function run() {
       res.send(result)
 
     })
+    app.post('/products',async(req,res)=>{
+      const product =req.body;
+      const result =await ProductsCollction.insertOne(product)
+      res.send(result)
+    })
     app.get('/products',async(req,res)=>{
       const qurey={}
       const result=await ProductsCollction.find(qurey).toArray()
       res.send(result)
     })
-    app.get('/products/:id',async(req,res)=>{
-      // const name =req.qurey.n;
+    app.get('/products/:id', async(req,res)=>{
+      
+      
       
       const id =req.params.id;
       const qurey={catagoryId:id}
@@ -57,9 +79,8 @@ async function run() {
       const result=await bookingCollction.insertOne(booking)
       res.send(result)
     })
-    app.get('/booking',async(req,res)=>{
+    app.get('/booking',veryfyJwt,async(req,res)=>{
       const email =req.query.email
-      // console.log(email)
       const query ={email:email}
       const result =await bookingCollction.find(query).toArray()
       res.send(result)
@@ -70,6 +91,19 @@ async function run() {
       const result =await usersCollction.insertOne(users)
       res.send(result)
     })
+
+     app.get('/jwt',async(req,res)=>{
+            const email =req.query.email;
+            const query ={email:email}
+            const user =await usersCollction.findOne(query);
+           
+            if(user){
+                const token =jwt.sign({email},process.env.ACCESS_TOKEN,{expiresIn: '3d'} )
+                return res.send({accesToken :token})
+            }
+            console.log(user)
+            res.status(403).send({accesToken: ''})
+        })
 
 
 
