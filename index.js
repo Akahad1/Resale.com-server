@@ -30,7 +30,14 @@ async function run() {
       res.send(result)
 
     })
-    app.get('/catagory/:id',async(req,res)=>{
+    app.get('/products',async(req,res)=>{
+      const qurey={}
+      const result=await ProductsCollction.find(qurey).toArray()
+      res.send(result)
+    })
+    app.get('/products/:id',async(req,res)=>{
+      // const name =req.qurey.n;
+      
       const id =req.params.id;
       const qurey={catagoryId:id}
       const result =await ProductsCollction.find(qurey).toArray()
@@ -52,7 +59,7 @@ async function run() {
     })
     app.get('/booking',async(req,res)=>{
       const email =req.query.email
-      console.log(email)
+      // console.log(email)
       const query ={email:email}
       const result =await bookingCollction.find(query).toArray()
       res.send(result)
