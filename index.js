@@ -15,6 +15,7 @@ const uri = `mongodb+srv://${process.env.USER_Name}:${process.env.USER_PASS}@clu
 console.log(uri)
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 const catagoryCollction = client.db('Resale').collection('catagory')
+const ProductsCollction = client.db('Resale').collection('Products')
 
 
 async function run() {
@@ -27,8 +28,8 @@ async function run() {
     })
     app.get('/catagory/:id',async(req,res)=>{
       const id =req.params.id;
-      const qurey={_id :ObjectId(id)}
-      const result =await catagoryCollction.findOne(qurey)
+      const qurey={catagoryId:id}
+      const result =await ProductsCollction.find(qurey).toArray()
       res.send(result)
     })
 
