@@ -38,6 +38,16 @@ function veryfyJwt (req,res,next){
 
 }
 
+const adminVeriy= async(req,res,next,)=>{
+  const decodedEmail =req.decoded.email;
+const qurey={email :decodedEmail}
+const user =await usersColltion.findOne(qurey)
+if(user?.role !== 'admin'){
+  return res.status(403).send({maeasss:'forbedden access'})
+}
+  next()
+}
+
 async function run() {
   try {
     app.get('/catagory', async (req, res) => {
@@ -52,10 +62,12 @@ async function run() {
       res.send(result)
     })
     app.get('/products',async(req,res)=>{
-      const qurey={}
+      const email=req.query.email
+      const qurey={sellerEmail:email}
       const result=await ProductsCollction.find(qurey).toArray()
       res.send(result)
     })
+    
     app.get('/products/:id', async(req,res)=>{
       
       
@@ -67,7 +79,7 @@ async function run() {
     })
     app.post('/booking',async(req,res)=>{
       
-      // const booking=req.body;
+      const booking=req.body;
       // const qurey ={
       //   email:booking.email
       // }
@@ -89,6 +101,53 @@ async function run() {
     app.post('/users',async(req,res)=>{
       const users =req.body;
       const result =await usersCollction.insertOne(users)
+      res.send(result)
+    })
+    app.put('/users/admin/:id',async(req,res)=>{
+      // const decodedEmail =req.decoded.email;
+      // const qurey={email :decodedEmail}
+      // const user =await usersColltion.findOne(qurey)
+      // if(user?.role !== 'admin'){
+      //     return res.status(403).send({maeasss:'forbedden access'})
+      // }
+
+
+
+      const id =req.params.id;
+      const filter ={_id:ObjectId(id)}
+      const option ={upsert: true}
+      const updatedoc ={
+          $set :{
+              role: 'admin'
+
+          }
+      }
+      const result =await usersCollction.updateOne(filter,updatedoc,option)
+      res.send(result)
+
+  })
+  app.get('/users/admin/:email',async (req,res)=>{
+    const email =req.params.email;
+    const qurey={email}
+    const user= await usersCollction.findOne(qurey)
+    res.send({issadmin :user?.role === 'admin'})
+})
+  app.get('/users/user/:email',async (req,res)=>{
+    const email =req.params.email;
+    const qurey={email}
+    const user= await usersCollction.findOne(qurey)
+    res.send({isUser :user?.role === 'User'})
+})
+  app.get('/users/seller/:email',async (req,res)=>{
+    const email =req.params.email;
+    const qurey={email}
+    const user= await usersCollction.findOne(qurey)
+    res.send({isSellers :user?.role === 'Sellers'})
+})
+
+    app.get('/users',async(req,res)=>{
+      const query={}
+      const result =await usersCollction.find(query).toArray()
       res.send(result)
     })
 
