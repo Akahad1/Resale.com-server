@@ -21,6 +21,7 @@ const catagoryCollction = client.db('Resale').collection('catagory')
 const ProductsCollction = client.db('Resale').collection('Products')
 const bookingCollction = client.db('Resale').collection('booking')
 const usersCollction = client.db('Resale').collection('users')
+const reportCollction = client.db('Resale').collection('report')
 
 function veryfyJwt (req,res,next){
   const authHeader=req.headers.authorization
@@ -38,15 +39,15 @@ function veryfyJwt (req,res,next){
 
 }
 
-const adminVeriy= async(req,res,next,)=>{
-  const decodedEmail =req.decoded.email;
-const qurey={email :decodedEmail}
-const user =await usersColltion.findOne(qurey)
-if(user?.role !== 'admin'){
-  return res.status(403).send({maeasss:'forbedden access'})
-}
-  next()
-}
+// const adminVeriy= async(req,res,next,)=>{
+//   const decodedEmail =req.decoded.email;
+// const qurey={email :decodedEmail}
+// const user =await usersCollction.findOne(qurey)
+// if(user?.role !== 'admin'){
+//   return res.status(403).send({maeasss:'forbedden access'})
+// }
+//   next()
+// }
 
 async function run() {
   try {
@@ -144,12 +145,19 @@ async function run() {
     const user= await usersCollction.findOne(qurey)
     res.send({isSellers :user?.role === 'Sellers'})
 })
+app.delete('/users/:id',veryfyJwt,async(req,res)=>{
+  const id =req.params.id;
+  const qurey={_id: ObjectId(id)}
+  const  result =await usersCollction.deleteOne(qurey)
+  res.send(result)
+})
 
     app.get('/users',async(req,res)=>{
       const query={}
       const result =await usersCollction.find(query).toArray()
       res.send(result)
     })
+    
 
      app.get('/jwt',async(req,res)=>{
             const email =req.query.email;
