@@ -7,8 +7,7 @@ app.use(cors())
 app.use(express.json())
 require('dotenv').config()
 
-// jnQsvQ5T8Z13wOcM
-// Resale
+
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
