@@ -162,6 +162,11 @@ app.delete('/users/:id',veryfyJwt,async(req,res)=>{
       const result=await reportCollction.insertOne(report)
       res.send(result)
     })
+    app.get('/report',async(req,res)=>{
+      const query={}
+      const result=await reportCollction.find(query).toArray()
+      res.send(result)
+    })
 
      app.get('/jwt',async(req,res)=>{
             const email =req.query.email;
